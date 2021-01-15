@@ -32,4 +32,5 @@ margin-right: auto;
 }
 .stats-item i {
     display: block;
+    text-align: center;
 }
