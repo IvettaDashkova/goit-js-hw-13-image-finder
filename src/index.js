@@ -40,7 +40,8 @@ function addContent() {
     .fetchImages()
     .then(dataImages => {
       if (dataImages.length === 0) {
-        errorRequest();
+          errorRequest();
+          return;
       }
       updateListImages(dataImages);
     })
