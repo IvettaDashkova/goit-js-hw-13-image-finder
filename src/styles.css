@@ -12,25 +12,24 @@ body {
   width: 400px;
 }
 .gallery {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 .photo-card {
-    margin: 5px;
-    width: 320px;
+  margin: 5px;
+  width: 320px;
 }
 .stats {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .stats-item {
-margin-left: auto;
-margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 .stats-item i {
-    display: block;
-    text-align: center;
+  display: block;
+  text-align: center;
 }
