@@ -1,24 +1,27 @@
 import './styles.css';
 import './main.scss';
 import inputSearchTpl from './templates/inputSearch.hbs';
-import list from './templates/listContent.hbs';
 import imageTpl from './templates/imageTpl.hbs';
 import apiService from './js/apiService';
-import { defaults, error } from '@pnotify/core';
-import '@pnotify/core/dist/PNotify.css';
-import '@pnotify/core/dist/Material.css';
-import * as basicLightbox from 'basiclightbox';
-
-const input = inputSearchTpl();
-document.body.insertAdjacentHTML('afterbegin', input);
+import errorRequest from './js/notifyError';
+import contentObserver from './js/contentObserver';
+import downloadObserver from './js/downloadObserver';
+import openModal from './js/modal';
 
 const body = document.body;
+const input = inputSearchTpl();
+body.insertAdjacentHTML('afterbegin', input);
 const searchForm = document.querySelector('.search-form');
 const loadMoreBtn = document.querySelector('[data-action="load-more"]');
 
-const listContent = list();
-body.insertAdjacentHTML('beforeend', listContent);
+const listContent = document.createElement('ul');
+listContent.classList.add('gallery');
+body.append(listContent);
 const listImages = document.querySelector('.gallery');
+
+searchForm.addEventListener('submit', onSearch);
+loadMoreBtn.addEventListener('click', addContent);
+listImages.addEventListener('click', openModal);
 
 function onSearch(e) {
   e.preventDefault();
@@ -27,77 +30,28 @@ function onSearch(e) {
   apiService.query = form.elements.query.value;
 
   listImages.innerHTML = '';
-
   apiService.resetPage();
-  apiService.fetchImages().then(dataImages => {
-    if (dataImages.length === 0) {
-      defaults.styling = 'material';
-      defaults.icons = 'material';
-      defaults.width = '300px';
-      return error({
-        text:
-          'Unfortunately, your search returned no results! Please enter a more correct request!',
-      });
-    }
-    updateListImages(dataImages);
-  });
+
+  addContent();
 }
+
 function addContent() {
-  apiService.fetchImages().then(dataImages => {
-    updateListImages(dataImages);
-  });
+  apiService
+    .fetchImages()
+    .then(dataImages => {
+      if (dataImages.length === 0) {
+        errorRequest();
+      }
+      updateListImages(dataImages);
+    })
+    .catch(error => console.log(error));
 }
+
 function updateListImages(dataImages) {
   const contentImages = imageTpl(dataImages);
-    listImages.insertAdjacentHTML('beforeend', contentImages);
-    
-  const targetObserver = document.querySelector(
-    '.gallery .photo-card:last-child',
-  );
-  const ioContent = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        addContent();
-        observer.unobserve(targetObserver);
-        console.log(entry.target);
-      }
-    });
-  });
-    ioContent.observe(targetObserver);
-    
-    const images = document.querySelectorAll('.gallery img');
-    const options = {
-        rootMargin: '100px',
-    }
-  const ioImages = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const image = entry.target;
-        const src = image.dataset.sourceprew;
-        image.src = src;
-        observer.unobserve(image);
-      }
-    });
-  }, options);
-
-  images.forEach(image => ioImages.observe(image));
+  listImages.insertAdjacentHTML('beforeend', contentImages);
+  contentObserver(addContent);
+  downloadObserver();
 }
 
-function openModal(event) {
-  if (event.target.nodeName !== 'IMG') {
-    return;
-  }
-  const modalWindow = basicLightbox
-    .create(
-      `<img class="lightbox__image" src=${event.target.dataset.source} alt="" />`,
-      {
-        closable: true,
-      },
-    )
-    .show();
-}
 
-searchForm.addEventListener('submit', onSearch);
-loadMoreBtn.addEventListener('click', addContent);
-
-listImages.addEventListener('click', openModal);
