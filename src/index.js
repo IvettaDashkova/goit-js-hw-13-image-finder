@@ -12,7 +12,7 @@ const body = document.body;
 const input = inputSearchTpl();
 body.insertAdjacentHTML('afterbegin', input);
 const searchForm = document.querySelector('.search-form');
-const loadMoreBtn = document.querySelector('[data-action="load-more"]');
+
 
 const listContent = document.createElement('ul');
 listContent.classList.add('gallery');
@@ -20,7 +20,6 @@ body.append(listContent);
 const listImages = document.querySelector('.gallery');
 
 searchForm.addEventListener('submit', onSearch);
-loadMoreBtn.addEventListener('click', addContent);
 listImages.addEventListener('click', openModal);
 
 function onSearch(e) {
@@ -33,6 +32,7 @@ function onSearch(e) {
   apiService.resetPage();
 
   addContent();
+  form.elements.query.value = '';
 }
 
 function addContent() {

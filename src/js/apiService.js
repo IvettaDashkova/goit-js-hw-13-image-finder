@@ -6,7 +6,7 @@ export default {
   page: 1,
   async fetchImages() {
     const BASE_URL = `https://pixabay.com/api/?image_type=photo&orientation=horizontal&q=${this.query}&page=${this.page}&per_page=12&key=${apiKey}`;
-
+      console.log('qwe');
       return await axios.get(BASE_URL)
           .then(({ data: { hits } }) =>  {
         this.page += 1;
