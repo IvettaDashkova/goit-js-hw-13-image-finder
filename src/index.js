@@ -22,6 +22,7 @@ const listImages = document.querySelector('.gallery');
 searchForm.addEventListener('submit', onSearch);
 listImages.addEventListener('click', openModal);
 
+
 function onSearch(e) {
   e.preventDefault();
 
@@ -30,7 +31,10 @@ function onSearch(e) {
 
   listImages.innerHTML = '';
   apiService.resetPage();
-
+  if (form.elements.query.value === '') {
+    errorRequest();
+    return;
+  };
   addContent();
   form.elements.query.value = '';
 }
